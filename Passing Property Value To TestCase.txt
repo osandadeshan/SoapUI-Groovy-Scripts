@@ -1,0 +1,9 @@
+import groovy.json.JsonSlurper
+
+// Get property value from the TestCase
+def testCaseProperty = testRunner.testCase.getPropertyValue( "fromProperty" )
+log.info testCaseProperty
+
+// Set property value to the TestCase
+testRunner.testCase.setPropertyValue( "toProperty", testCaseProperty )
+

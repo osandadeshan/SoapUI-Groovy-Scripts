@@ -1,0 +1,23 @@
+import groovy.json.JsonSlurper
+
+def response1 = context.expand( '${Request1#Response}' ).toString()
+log.info response1
+
+def jsonString=response1
+log.info jsonString
+
+
+// Parses JSON text content into Groovy data structures (objects)
+JsonSlurper serializer=new JsonSlurper()
+def object = serializer.parseText(jsonString)
+
+log.info(object.results.address_components.long_name)
+
+def longNamesList = object.results.address_components.long_name
+def newAddress = longNamesList[0][0]
+
+def toRequest = testRunner.testCase.getTestStepByName("Request2")
+    toRequest.setPropertyValue("address", newAddress)
+
+
+

@@ -1,0 +1,91 @@
+import jxl.*
+import jxl.write.*
+import com.eviware.soapui.support.XmlHolder
+import net.sf.*;
+import net.sf.json.*;
+import net.sf.json.groovy.*;
+import java.nio.file.Path;
+import java.nio.file.Files;
+
+  def resultDir = new File("D:\\Mitra Innovation\\QA Automation\\Projects\\Kraydel\\SoapUI\\SoapUIResults");
+        if(!resultDir.exists()) {
+            resultDir.mkdirs();
+        }
+
+  def suiteName = testSuite.name
+
+  String filePath = "D:\\Mitra Innovation\\QA Automation\\Projects\\Kraydel\\SoapUI\\SoapUIResults" +suiteName+ ".csv"
+  
+  def file = new File(filePath)
+
+  // If there is an existing CSV file with the TestSuite name, delete it 
+  file.delete()   
+
+  // Creating a new CSV file with the TestSuite name
+  def resultsFile = new File(resultDir, suiteName+".csv");
+
+  // If the file does not already exist, we want to create it, otherwise we want to append
+        if(!resultsFile.exists()) {
+            resultsFile.createNewFile();
+
+                //Header values
+                resultsFile.write('"TestCase","TestSuite"' + '\n');
+        }
+
+     
+	runner.results.each { testCaseResult ->
+   	 def caseName = testCaseResult.testCase.name
+       def caseStatus = testCaseResult.status.toString()
+        
+    	log.info "Test Case: $caseName $caseStatus" 
+
+
+  // Appending the TestCase name and TestSuite name to the CSV file
+     resultsFile.append("$caseName,$suiteName");
+     resultsFile.append("\n");
+}
+
+
+
+
+
+/* 		The below code copy all the files in sourceDir to destinationDir 		*/
+def sourceDir = "D:\\Mitra Innovation\\QA Automation\\Projects\\Kraydel\\SoapUI\\SoapUIResults"
+def destinationDir = "C:\\Users\\osanda\\IdeaProjects\\TestProject\\resources"
+
+//checking for source directory
+def directory = new File("${sourceDir}")
+if (!directory.isDirectory()) {
+println "The provided directory name ${sourceDir} is NOT a directory."
+}
+
+//Clousre
+def write = {data, lenth ->
+output.write(data, 0, lenth)
+}
+
+//Closure 
+def fileCopyClosure = {
+    if(it.canRead()) { //make sure whether you can read it
+       def destFolder = new File("${destinationDir}")
+          if(!destFolder.exists()) {
+              println("Creating new destination directory  [${destFolder}]")
+              destFolder.mkdir()
+          }
+
+          println "processing ${it.name} from ${it.canonicalPath}"
+
+         def desti = new File("${destinationDir}\\${it.name}") 
+
+         //create output stream
+         output = desti.newOutputStream()
+         it.eachByte(1024, write)
+         output.close()
+         println "Copy completed${desti.name}"
+     }
+}
+directory.eachFileRecurse(fileCopyClosure)
+
+
+
+       

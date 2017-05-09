@@ -1,0 +1,11 @@
+import groovy.json.JsonSlurper
+import com.eviware.soapui.support.types.StringToStringMap 
+
+// Get property value from the TestCase
+def testCaseProperty = testRunner.testCase.getPropertyValue( "fromProperty" )
+log.info testCaseProperty
+
+// Set property value to the request header property
+def headers = new StringToStringMap()
+ headers.put("toProperty", testCaseProperty);
+ testRunner.testCase.testSteps["Request1"].getHttpRequest().setRequestHeaders(headers)
